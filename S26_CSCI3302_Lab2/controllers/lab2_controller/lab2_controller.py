@@ -8,8 +8,8 @@ from controller import Robot, Motor, DistanceSensor
 # Ground Sensor Measurements under this threshold are black
 # measurements above this threshold can be considered white.
 # TODO: Set a reasonable threshold that separates "line detected" from "no line detected"
-GROUND_SENSOR_THRESHOLD = 0
-
+GROUND_SENSOR_THRESHOLD = 500
+machine_state = 'line_follower'
 # These are your pose values that you will update by solving the odometry equations
 pose_x = 0
 pose_y = 0
@@ -26,7 +26,8 @@ robot = Robot()
 # ePuck Constants
 EPUCK_AXLE_DIAMETER = 0.053  # ePuck's wheels are 53mm apart.
 # TODO: set the ePuck wheel speed in m/s after measuring the speed (Part 1)
-EPUCK_MAX_WHEEL_SPEED = 0
+# equation used: |-0.340028 - 0.186487|
+EPUCK_MAX_WHEEL_SPEED = 0.1237
 MAX_SPEED = 6.28
 
 # get the time step of the current world.
@@ -37,8 +38,8 @@ leftMotor = robot.getDevice('left wheel motor')
 rightMotor = robot.getDevice('right wheel motor')
 leftMotor.setPosition(float('inf'))
 rightMotor.setPosition(float('inf'))
-leftMotor.setVelocity(0.0)
-rightMotor.setVelocity(0.0)
+leftMotor.setVelocity(EPUCK_MAX_WHEEL_SPEED)
+rightMotor.setVelocity(EPUCK_MAX_WHEEL_SPEED)
 
 # Initialize and Enable the Ground Sensors
 gsr = [0, 0, 0]
@@ -52,9 +53,9 @@ for i in range(10):
     robot.step(SIM_TIMESTEP)
 
 # Initialize variable for left and right speed
-vL = 0
-vR = 0
-
+vL = MAX_SPEED / 2
+vR = MAX_SPEED / 2
+overshoot = 10 #creating a smaller number as to not overshoot
 # Main Control Loop:
 while robot.step(SIM_TIMESTEP) != -1:
 
@@ -79,6 +80,18 @@ while robot.step(SIM_TIMESTEP) != -1:
     # right on the spot. vL=MAX_SPEED and vR=0.5*MAX_SPEED lets the
     # robot drive a right curve.
     #
+    if gsr[LEFT_IDX] < GROUND_SENSOR_THRESHOLD:
+        vL = -MAX_SPEED / overshoot
+        vR = MAX_SPEED / overshoot
+    if gsr[RIGHT_IDX] < GROUND_SENSOR_THRESHOLD:
+        vL = MAX_SPEED / overshoot
+        vR = -MAX_SPEED / overshoot
+    if gsr[RIGHT_IDX] > GROUND_SENSOR_THRESHOLD and gsr[LEFT_IDX] > GROUND_SENSOR_THRESHOLD and gsr[CENTER_IDX] > GROUND_SENSOR_THRESHOLD:
+        vL = -MAX_SPEED / overshoot
+        vR = MAX_SPEED / overshoot
+    if gsr[CENTER_IDX] < GROUND_SENSOR_THRESHOLD:
+        vL = MAX_SPEED
+        vR = MAX_SPEED
     # 2) If your robot "overshoots", turn slower.
     #
     # 3) Only set the wheel speeds once so that you can use the speed
@@ -111,6 +124,6 @@ while robot.step(SIM_TIMESTEP) != -1:
     # 2) Use the pose when you encounter the line last
     # for best results
 
-    print("Current pose: [%5f, %5f, %5f]" % (pose_x, pose_y, pose_theta))
+    #print("Current pose: [%5f, %5f, %5f]" % (pose_x, pose_y, pose_theta))
     leftMotor.setVelocity(vL)
     rightMotor.setVelocity(vR)
