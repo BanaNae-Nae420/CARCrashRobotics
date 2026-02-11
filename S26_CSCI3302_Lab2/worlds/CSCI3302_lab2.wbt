@@ -1,4 +1,4 @@
-#VRML_SIM R2023b utf8
+#VRML_SIM R2025a utf8
 
 EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2022b/projects/robots/gctronic/e-puck/protos/E-puck.proto"
 EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2022b/projects/robots/gctronic/e-puck/protos/E-puckGroundSensors.proto"
@@ -16,8 +16,8 @@ WorldInfo {
   lineScale 0.04
 }
 Viewpoint {
-  orientation -0.7071057814660382 0.7071077809056435 5.551115123136879e-17 3.1415966524690035
-  position -2.543929220379213e-06 1.266041732702008 2.543936413575746e-06
+  orientation -0.7076268878173066 0.6918730178728436 0.14344307155633812 2.734390913836414
+  position -0.09800065460651625 1.0099807578734303 0.5693676890581396
   follow "e-puck"
   followType "None"
 }
@@ -41,7 +41,7 @@ RectangleArena {
   wallHeight 0.05
 }
 DEF EPUCK E-puck {
-  translation -0.280021 1.71451e-06 0.209972
+  translation -0.280028 -2.85137e-07 0.279972
   rotation 0.5773136019637692 0.5773666019272277 0.5773706019244699 -2.0944553071795866
   controller "lab2_controller"
   groundSensorsSlot [
