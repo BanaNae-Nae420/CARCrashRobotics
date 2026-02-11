@@ -57,8 +57,6 @@ vL = MAX_SPEED / 2
 vR = MAX_SPEED / 2
 overshoot = 10 #creating a smaller number as to not overshoot
 
-vLnorm = 0 #initalize for odometry function
-vRnorm = 0
 # Main Control Loop:
 while robot.step(SIM_TIMESTEP) != -1:
 
@@ -121,7 +119,18 @@ while robot.step(SIM_TIMESTEP) != -1:
     #odometry update: I used copilot to get an idea of how to code
     vLnorm = vL/MAX_SPEED * EPUCK_MAX_WHEEL_SPEED
     vRnorm = vR/MAX_SPEED * EPUCK_MAX_WHEEL_SPEED
-    
+    v = 0.5 * (vLnorm + vRnorm)
+    omega = (vRnorm - vLnorm) / EPUCK_AXLE_DIAMETER
+
+    dt = SIM_TIMESTEP / 1000.0       # seconds
+    dx = v * math.cos(pose_theta) * dt
+    dy = v * math.sin(pose_theta) * dt
+    dtheta = omega * dt
+
+    pose_x += dx
+    pose_y += dy
+    pose_theta += dtheta
+
     # Part 3
     # TODO: Implement Loop Closure also under state "line_follower" to reset pose when robot passes over the Start Line.
     # Hints:
@@ -131,7 +140,7 @@ while robot.step(SIM_TIMESTEP) != -1:
     # 2) Use the pose when you encounter the line last
     # for best results
 
-    #print("Current pose: [%5f, %5f, %5f]" % (pose_x, pose_y, pose_theta))
+    print("Current pose: [%5f, %5f, %5f]" % (pose_x, pose_y, pose_theta))
     leftMotor.setVelocity(vL)
     rightMotor.setVelocity(vR)
 
