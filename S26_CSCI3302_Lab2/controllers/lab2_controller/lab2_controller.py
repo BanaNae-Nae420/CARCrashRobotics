@@ -56,13 +56,16 @@ for i in range(10):
 vL = MAX_SPEED / 2
 vR = MAX_SPEED / 2
 overshoot = 10 #creating a smaller number as to not overshoot
+
+vLnorm = 0 #initalize for odometry function
+vRnorm = 0
 # Main Control Loop:
 while robot.step(SIM_TIMESTEP) != -1:
 
     # Read ground sensor values
     for i, gs in enumerate(ground_sensors):
         gsr[i] = gs.getValue()
-
+    
     # TODO: Uncomment to see the ground sensor values!
     # TODO: But when you don't need it, please comment it so you have a clean terminal.
     # print(gsr)
@@ -114,7 +117,11 @@ while robot.step(SIM_TIMESTEP) != -1:
     # 4) Focus on getting things generally right first, then worry
     # about calculating odometry in the world coordinate system of the
     # Webots simulator first (x points down, y points right)
-
+    
+    #odometry update: I used copilot to get an idea of how to code
+    vLnorm = vL/MAX_SPEED * EPUCK_MAX_WHEEL_SPEED
+    vRnorm = vR/MAX_SPEED * EPUCK_MAX_WHEEL_SPEED
+    
     # Part 3
     # TODO: Implement Loop Closure also under state "line_follower" to reset pose when robot passes over the Start Line.
     # Hints:
@@ -127,3 +134,4 @@ while robot.step(SIM_TIMESTEP) != -1:
     #print("Current pose: [%5f, %5f, %5f]" % (pose_x, pose_y, pose_theta))
     leftMotor.setVelocity(vL)
     rightMotor.setVelocity(vR)
+
